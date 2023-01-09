@@ -77,18 +77,21 @@ router.post("/api/classes", (req, res)=>{
 })
 
 
-router.post("/api/students", (req, res)=>{
+router.post("/api/addingStudents", (req, res)=>{
 
     const batch = req.body.batch_id;
 
     try{
-        connection.query(`SELECT Enrollment_no, name from student where  student.course IN (select batch_allocation.course from batch_allocation where batch_id = ?) AND  student.stream IN (select batch_allocation.stream from batch_allocation where batch_id = ?);`,
+        connection.query(`SELECT enrollment_no, name from student where  student.course IN 
+        (select batch_allocation.course from batch_allocation where batch_id = ?) 
+        AND  
+        student.stream IN (select batch_allocation.stream from batch_allocation where batch_id = ?);`,
         [batch, batch],
         function(error, result){
             if(error){
                 throw error;
             }else{
-                res.send(result);
+                res.json({message: "Succesfully added students"});    
             }
         })
     }catch(e){
@@ -119,6 +122,39 @@ router.post("/api/generatePId", (req, res)=>{
         res.status(500).send({message: "Internal server error"});
     }
     
+})
+
+router.post('/api/markingAttendace', (req, res)=>{
+    const PId = req.body.id;
+    const enroll = req.body.enroll;
+    const attendanceStatus = req.body.status;
+    try{
+        if (attendanceStatus === 1){
+            connection.query(`UPDATE attendance SET PA=CONCAT(?, PA) WHERE enrollment_no = ? `,
+            [PId, enroll],
+            function(error){
+                if(error){
+                    throw error;
+                }else{
+                    res.send({message: "Marked present"});
+                }
+            });
+        }else if (attendanceStatus === 0){
+            connection.query(`UPDATE attendance SET PA=CONCAT(0, PA) WHERE enrollment_no = ? `,
+            [enroll],
+            function(error){
+                if(error){
+                    throw error;
+                }else{
+                    res.send({message: "Marked absent"});
+                }
+            });
+        }
+        
+    }catch(e){
+        res.status(500).send({message: "Internal server error!"});
+    }
+
 })
 
 module.exports = router;
