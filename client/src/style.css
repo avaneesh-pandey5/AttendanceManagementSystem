@@ -703,3 +703,67 @@ table thead tr {
 .react-calendar--selectRange .react-calendar__tile--hover {
   background-color: #e6e6e6;
 }
+
+
+/*about page*/
+.student .card {
+  width: 300px;
+  height: 300px;
+  margin: 15px;
+  margin-left: 30px;
+  background: linear-gradient(to bottom, #004679, #004679);
+  
+  text-align: center;
+  border-radius: 0px;
+  padding: 0px;
+  overflow: hidden;
+  
+
+}
+.student .card img {
+  width: 300px;
+  height: 270px;
+  
+}
+
+
+.table1 {
+  width: 90%;
+   margin: 25px 30px; 
+  font-size: 18px;
+  min-width: 40%;
+  overflow: hidden;
+  border-radius: 5px 5px 0 0;
+}
+
+table thead tr {
+  color: #fff;
+  background: #041D53;
+  text-align: left;
+  font-weight: bold;
+}
+
+.table1 th{
+  padding: 10px 30px;
+}
+.table1 td {
+  padding: 10px 30px;
+}
+
+.table1 tbody tr {
+  border-bottom: 8px solid #ddd;
+}
+
+.table1 tbody tr:nth-of-type(odd) {
+  background: #f3f3f3;
+}
+
+.table1 tbody tr.active {
+  font-weight: bold;
+  color: #041D53;
+}
+
+.table1 tbody tr:last-of-type {
+  border-bottom: 2px solid #041D53;
+}
+
