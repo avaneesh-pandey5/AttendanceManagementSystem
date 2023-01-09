@@ -40,8 +40,10 @@ const Dashboard = () => {
                 </table>
               </div>
               <div className='d-flex justify-content-center'>
-              <Link className='pageLink' to="/about"><Button className='profile-btn w-100' variant="outline-light" size="md">View Profile
-              </Button></Link>
+              <Link className='pageLink' to="/about">
+                <Button className='profile-btn w-100' variant="outline-light" size="md">View Profile
+              </Button>
+              </Link>
               </div>
             </div>
 

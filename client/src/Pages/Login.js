@@ -9,6 +9,8 @@ const Login = () => {
   const [title1, setTitle1] = useState("Select Branch");
   const [title2, setTitle2] = useState("Select Batch");
 
+  
+
   return (
     <>
       <div className="login-bg">
