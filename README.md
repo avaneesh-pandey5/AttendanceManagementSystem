@@ -10,7 +10,6 @@ A modern, intuitive attendance management system for tracking student attendance
 
 ## Getting Started
 
-### Contributing to UI
 
 1. Clone the repository: `git clone https://github.com/Sdc-Usar/AttendanceManagementSystem.git`
 2. Change directory to client: `cd client`
