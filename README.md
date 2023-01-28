@@ -17,6 +17,8 @@ A modern, intuitive attendance management system for tracking student attendance
 
 ## Contribution Guidelines
 
+### Contributing to UI
+
 We welcome contributions to the Attendance Management System! Please follow these guidelines when submitting a pull request:
 
 1. Fork the repository and create a new branch for your feature.
