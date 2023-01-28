@@ -10,14 +10,14 @@ A modern, intuitive attendance management system for tracking student attendance
 
 ## Getting Started
 
+### Contributing to UI
+
 1. Clone the repository: `git clone https://github.com/Sdc-Usar/AttendanceManagementSystem.git`
 2. Change directory to client: `cd client`
 3. Install dependencies: `npm install`
 4. Start the development server: `npm start`
 
 ## Contribution Guidelines
-
-### Contributing to UI
 
 We welcome contributions to the Attendance Management System! Please follow these guidelines when submitting a pull request:
 
