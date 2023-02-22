@@ -1,46 +1,39 @@
-
-import './App.css';
-import { useState } from 'react';
-import Calendar from 'react-calendar';
+import "./App.css";
+import { useState } from "react";
+import Calendar from "react-calendar";
 // import { fetchAllEvents } from 'api/event'
-import  { useEffect } from 'react'
-import moment from 'moment'
-import { Link } from 'react-router-dom'
-import { Card, CardBody } from 'reactstrap'
-
+import { useEffect } from "react";
+// import moment from 'moment'
+import { Link } from "react-router-dom";
+// import { Card, CardBody } from "reactstrap";
 
 function App() {
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const allEvents = await fetchAllEvents()
-//       if (allEvents) {
-//         setData(allEvents);
-//       }
-//     }
-//     fetchData()
-//   }, [])
-//   console.log(data);
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       const allEvents = await fetchAllEvents()
+  //       if (allEvents) {
+  //         setData(allEvents);
+  //       }
+  //     }
+  //     fetchData()
+  //   }, [])
+  //   console.log(data);
 
-//   const [date, setDate] = useState(new Date());
+  //   const [date, setDate] = useState(new Date());
 
   return (
-    <div className='app'>
-
-    <div className='calendar-container'>
-      <Calendar
+    <div className="app">
+      <div className="calendar-container">
+        <Calendar
         // onChange={setDate}
         // value={date}
-      />
-    </div>
-    
-    
+        />
+      </div>
 
-
-    <div className="times">
-
-   {/* {data.map((event) => {
+      <div className="times">
+        {/* {data.map((event) => {
 
     if (moment(event?.startDate).format('DD MMM, YY')===moment(date).format('DD MMM, YY')) {
     return <p>
@@ -60,10 +53,9 @@ function App() {
             </Link>
    </p>  ;
   }  */}
-     {/* }) } */}
-   
- </div>
-  </div>
+        {/* }) } */}
+      </div>
+    </div>
   );
 }
 

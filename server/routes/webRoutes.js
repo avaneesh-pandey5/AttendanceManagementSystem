@@ -1,79 +1,17 @@
 const express = require("express");
+const {
+  login,
+  getStats,
+  allStudents,
+} = require("../controllers/webControllers.js");
 const router = express.Router();
-const mysql = require("mysql");
+const db = require("../database.js");
+const { isWebAuthenticated } = require("../middlewares/Auth.js");
 
-const connection = mysql.createConnection({
-    host     : process.env.HOST,
-    port     : process.env.PORT,
-    user     : process.env.USER,
-    password : process.env.PASSWORD,
-    database : process.env.DATABASE
-});
+router.route("/login").post(login);
 
+router.route("/getStats/:subjectCode").get(isWebAuthenticated, getStats);
 
-connection.connect(function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("mysql connected");
-    }
-});
-
-router.get("/api/attendance", (req, res)=>{
-    connection.query(`SELECT PA FROM attendance WHERE enrollement_no = ?`,
-    [req.body.enroll], 
-    function(error, result){
-        if(error){
-            throw error;
-        }else{
-            res.send(result);
-        }
-    })
-})
-
-router.post("/api/student", (req, res)=>{
-    const enroll = req.body.enroll;
-    try{
-        connection.query(`SELECT * FROM student WHERE enrollment_no = ?`,
-        [enroll],
-        function(error, result){
-            if(error){
-                throw error;
-            }else if(result[0] == null){
-                res.status(400).json({message: "Student with this enrollement no. doesn't exist"});
-            }
-            else{
-                res.json({message:"Success", data: result});
-            }
-        })
-    }catch(e){
-        res.status(500).send({message: 'Internal server error!'})
-    }
-    
-})
-
-router.get("/api/attendanceStats", (req, res)=>{
-    console.log("Working fine");
-    connection.query(`SELECT PA FROM attendance WHERE Enrollement_no = ? AND periodID=?`,
-    [req.body.enroll, req.body.period],
-    function(error, result){
-        if(error){
-            throw error;
-        }else{
-            var status = checkAttendanceStats(JSON.stringify(result[0].PA))
-            res.send({message: status});
-
-        }
-    })
-})
-
-function checkAttendanceStats(status){
-    console.log(status);
-    if(status!==0){
-        status = "present";
-        return status;
-    }
-}
-
+router.route("/demo").get(isWebAuthenticated, allStudents);
 
 module.exports = router;

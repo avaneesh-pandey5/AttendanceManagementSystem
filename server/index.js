@@ -1,56 +1,21 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
-const bodyParser = require("body-parser");
-const mysql = require("mysql");
-const appRoutes = require("./routes/appRoutes");
-const webRoutes = require("./routes/webRoutes");
-
 const app = express();
+const cookieParser = require("cookie-parser");
 
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-
-app.use(bodyParser.json());
+//Using Middlewares
 app.use(express.json());
-app.use(appRoutes);
-app.use(webRoutes);
-  
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-const connection = mysql.createConnection({
-    host     : process.env.HOST,
-    port     : process.env.PORT,
-    user     : process.env.USER,
-    password : process.env.PASSWORD,
-    database : process.env.DATABASE
+//Importing Routes
+const webRoutes = require("./routes/webRoutes");
+const appRoutes = require("./routes/appRoutes");
+
+//Using Routes
+app.use("/api/v1", webRoutes);
+app.use("/api/v1", appRoutes);
+
+app.listen(process.env.PORT, (req, res) => {
+  console.log(`Server listening 🎵 on port ${process.env.PORT}`);
 });
-
-
-connection.connect(function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("mysql connected");
-    }
-});
-
-
-app.get("/api/allStudents", (req, res)=>{
-    connection.query(`SELECT * FROM student`, function(error, result){
-        if(error){
-            throw error;
-        }else{
-            res.send(result);
-        }
-    })
-})
-
-
-//Web API's
-//APP API's
-
-
-
-app.listen(8080, (req, res)=> {
-    console.log("Server listening on port 8080");
-})
