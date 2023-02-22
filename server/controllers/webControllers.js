@@ -183,8 +183,13 @@ exports.periodID_to_Subjects = (attended) => {
 
 // only this function will be used by api
 
-exports.subjectinfo = async (date, enrollment_no, batch_id) => {
+exports.subjectinfo = async (req, res) => {
   try {
+    const user = req.user;
+    const { batch_id } = req.params;
+    const { date } = req.params;
+    const { enrollment_no } = req.params;
+
     const [period_id, PA] = await Promise.all([exports.getPeriodId(date, batch_id), exports.getPA(enrollment_no, date)]);
 
     const Present = exports.periodID_to_Subjects(exports.intersection(period_id.map(value => value.period_id), PA.map(value_1 => value_1.PA)));
