@@ -198,7 +198,7 @@ exports.subjectinfo = async (req, res) => {
 
     const Final = `Attended Subjects: ${Present}, Unattended Subjects: ${notPresent}`;
 
-    return Final;
+    return res.status(200).json({ success: true, Final });
   
   } catch (error) {
     res.status(500).json({
