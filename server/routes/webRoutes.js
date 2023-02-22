@@ -12,6 +12,8 @@ router.route("/login").post(login);
 
 router.route("/getStats/:subjectCode").get(isWebAuthenticated, getStats);
 
+router.route("/calender/:batch_id/:date/:enrollment_no").get(isWebAuthenticated, subjectinfo);
+
 router.route("/demo").get(isWebAuthenticated, allStudents);
 
 module.exports = router;
