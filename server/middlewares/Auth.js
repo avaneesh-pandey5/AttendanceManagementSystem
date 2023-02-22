@@ -23,7 +23,7 @@ exports.isWebAuthenticated = async (req, res, next) => {
         throw error;
       }
       if (result.length == 0) {
-        return res.tatus(404);
+        return res.status(404).json({ message: "Invalid Token!" });
       } else {
         // req.user = reuslt[0];
         req.user = result[0];
@@ -38,24 +38,30 @@ exports.isWebAuthenticated = async (req, res, next) => {
 
 exports.isAppAuthenticated = async (req, res, next) => {
   try {
-    const token =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
+    const token = req.cookies.token;
 
     if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "No token provided" });
+      return res.status(401).json({
+        message: "Please login first!",
+      });
     }
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
-      if (error) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Invalid token" });
-      }
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    req.user = decoded;
 
-      req.user = decoded;
-      next();
+    const query = `SELECT * FROM Employee WHERE instructor_id = ${decoded.id}`;
+
+    db.query(query, (error, result) => {
+      if (error) {
+        throw error;
+      }
+      if (result.length == 0) {
+        return res.status(404).json({ message: "Invalid token!" });
+      } else {
+        req.user = result[0];
+
+        next();
+      }
     });
   } catch (error) {
     res.status(500).json({
