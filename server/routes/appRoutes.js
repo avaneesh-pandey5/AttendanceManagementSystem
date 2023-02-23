@@ -5,13 +5,14 @@ const {
   generatePID,
 } = require("../controllers/appControllers.js");
 const router = express.Router();
-const db = require("../database.js");
+
+const { isAppAuthenticated } = require("../middlewares/Auth.js");
 
 router.route("/loginApp").post(loginApp);
 
-router.route("/getClasses").get(getClasses);
+router.route("/getClasses").get(isAppAuthenticated, getClasses);
 
-router.route("/generatePID").post(generatePID);
+router.route("/generatePID").post(isAppAuthenticated, generatePID);
 
 // router.post("/api/addingStudents", (req, res) => {
 //   const batch = req.body.batch_id;

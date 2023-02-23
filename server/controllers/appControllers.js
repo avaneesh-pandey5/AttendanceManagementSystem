@@ -47,8 +47,8 @@ function generateToken(user) {
 
 exports.getClasses = async (req, res) => {
   try {
-    // const user = req.user;
-    const id = req.body.instructor_id;
+    const user = req.user;
+    const id = user.instructor_id;
 
     db.query(
       `SELECT batch_id FROM ggsipu_attendance.subject_allocation WHERE instructor_id = ?`,
@@ -86,7 +86,8 @@ exports.getClasses = async (req, res) => {
 
 exports.generatePID = async (req, res) => {
   try {
-    const id = req.body.instructor_id;
+    const user = req.user;
+    const id = user.instructor_id;
     const subject_code = req.body.code;
     const batch_id = req.body.batchId;
 
