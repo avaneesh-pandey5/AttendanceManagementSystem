@@ -49,8 +49,36 @@ function generateToken(user) {
 exports.getClasses = async (req, res) => {
   try {
     const user = req.user;
+    const course = user.course;
+    const stream = user.stream;
+    const semester = user.semester;
 
-    // To get all classes of loged in user
+    db.query(
+      `SELECT batch_id FROM ggsipu_attendance.batch_allocation WHERE course = ? AND stream = ? AND semster = ? `,
+      [course, stream, semester],
+      (error, result) => {
+        if (error) {
+          throw error;
+        } else if (result[0] == null) {
+          return res
+            .status(400)
+            .json({ success: false, message: "No batch ID found!" });
+        } else {
+          const batch_id = result[0];
+          db.query(
+            `SELECT subject_code ggsipu_attendance.subject_allocation WHERE batch_id = ?`,
+            [batch_id],
+            (error, result) => {
+              if (error) {
+                throw error;
+              } else {
+                res.status(200).json({ success: true, batchId: result });
+              }
+            }
+          );
+        }
+      }
+    );
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -124,7 +152,6 @@ exports.allStudents = async (req, res) => {
   }
 };
 
-
 // calendar controller functions.
 
 getPeriodId = (date, batch_id) => {
@@ -133,15 +160,15 @@ getPeriodId = (date, batch_id) => {
       const sql = `SELECT period_id FROM period_id WHERE batch_ID = '${batch_id}' AND stamp LIKE '${date}%';`;
       db.query(sql, (err, result) => {
         if (err) {
-          console.error('Error fetching data from MySQL:', err);
-          reject({statusCode: 500, message: 'Internal Server Error'});
+          console.error("Error fetching data from MySQL:", err);
+          reject({ statusCode: 500, message: "Internal Server Error" });
         } else {
           resolve(result);
         }
       });
     } catch (error) {
-      console.error('Error:', error);
-      reject({statusCode: 500, message: 'Internal Server Error'});
+      console.error("Error:", error);
+      reject({ statusCode: 500, message: "Internal Server Error" });
     }
   });
 };
@@ -152,32 +179,35 @@ getPA = (enrollment_no, date) => {
       const sql = `SELECT PA FROM attendance WHERE enrollment_no = '${enrollment_no}' AND PA LIKE '%${date}%';`;
       db.query(sql, (err, result) => {
         if (err) {
-          console.error('Error fetching data from MySQL:', err);
-          reject({statusCode: 500, message: 'Internal Server Error'});
+          console.error("Error fetching data from MySQL:", err);
+          reject({ statusCode: 500, message: "Internal Server Error" });
         } else {
           resolve(result);
         }
       });
     } catch (error) {
-      console.error('Error:', error);
-      reject({statusCode: 500, message: 'Internal Server Error'});
+      console.error("Error:", error);
+      reject({ statusCode: 500, message: "Internal Server Error" });
     }
   });
 };
 
-
 intersection = (period_id, PA) => {
-  const attended = period_id.filter(value => PA.includes(value));
+  const attended = period_id.filter((value) => PA.includes(value));
   return attended;
 };
 
 uncommonitem = (period_id, PA) => {
-  const unattended = new Set(period_id.concat(PA).filter(v => !period_id.includes(v) || !PA.includes(v)));
+  const unattended = new Set(
+    period_id
+      .concat(PA)
+      .filter((v) => !period_id.includes(v) || !PA.includes(v))
+  );
   return Array.from(unattended);
 };
 
 periodID_to_Subjects = (attended) => {
-  const subjectcode = attended.map(value => value.slice(8, 14));
+  const subjectcode = attended.map((value) => value.slice(8, 14));
   return subjectcode;
 };
 
@@ -190,16 +220,28 @@ exports.subjectinfo = async (req, res) => {
     const { date } = req.params;
     const { enrollment_no } = user.enrollment_no;
 
-    const [period_id, PA] = await Promise.all([getPeriodId(date, batch_id), getPA(enrollment_no, date)]);
- 
-    const Present = periodID_to_Subjects(intersection(period_id.map(value => value.period_id), PA.map(value_1 => value_1.PA)));
+    const [period_id, PA] = await Promise.all([
+      getPeriodId(date, batch_id),
+      getPA(enrollment_no, date),
+    ]);
 
-    const notPresent = periodID_to_Subjects(uncommonitem(period_id.map(value_2 => value_2.period_id), PA.map(value_3 => value_3.PA)));
+    const Present = periodID_to_Subjects(
+      intersection(
+        period_id.map((value) => value.period_id),
+        PA.map((value_1) => value_1.PA)
+      )
+    );
+
+    const notPresent = periodID_to_Subjects(
+      uncommonitem(
+        period_id.map((value_2) => value_2.period_id),
+        PA.map((value_3) => value_3.PA)
+      )
+    );
 
     const Final = `Attended Subjects: ${Present}, Unattended Subjects: ${notPresent}`;
 
     return res.status(200).json({ success: true, Final });
-  
   } catch (error) {
     res.status(500).json({
       success: false,
