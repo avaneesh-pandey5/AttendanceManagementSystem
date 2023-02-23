@@ -127,7 +127,7 @@ exports.allStudents = async (req, res) => {
 
 // calendar controller functions.
 
-exports.getPeriodId = (date, batch_id) => {
+getPeriodId = (date, batch_id) => {
   return new Promise((resolve, reject) => {
     try {
       const sql = `SELECT period_id FROM period_id WHERE batch_ID = '${batch_id}' AND stamp LIKE '${date}%';`;
@@ -146,7 +146,7 @@ exports.getPeriodId = (date, batch_id) => {
   });
 };
 
-exports.getPA = (enrollment_no, date) => {
+getPA = (enrollment_no, date) => {
   return new Promise((resolve, reject) => {
     try {
       const sql = `SELECT PA FROM attendance WHERE enrollment_no = '${enrollment_no}' AND PA LIKE '%${date}%';`;
@@ -166,17 +166,17 @@ exports.getPA = (enrollment_no, date) => {
 };
 
 
-exports.intersection = (period_id, PA) => {
+intersection = (period_id, PA) => {
   const attended = period_id.filter(value => PA.includes(value));
   return attended;
 };
 
-exports.uncommonitem = (period_id, PA) => {
+uncommonitem = (period_id, PA) => {
   const unattended = new Set(period_id.concat(PA).filter(v => !period_id.includes(v) || !PA.includes(v)));
   return Array.from(unattended);
 };
 
-exports.periodID_to_Subjects = (attended) => {
+periodID_to_Subjects = (attended) => {
   const subjectcode = attended.map(value => value.slice(8, 14));
   return subjectcode;
 };
@@ -188,13 +188,13 @@ exports.subjectinfo = async (req, res) => {
     const user = req.user;
     const { batch_id } = req.params;
     const { date } = req.params;
-    const { enrollment_no } = req.params;
+    const { enrollment_no } = user.enrollment_no;
 
-    const [period_id, PA] = await Promise.all([exports.getPeriodId(date, batch_id), exports.getPA(enrollment_no, date)]);
+    const [period_id, PA] = await Promise.all([getPeriodId(date, batch_id), getPA(enrollment_no, date)]);
+ 
+    const Present = periodID_to_Subjects(intersection(period_id.map(value => value.period_id), PA.map(value_1 => value_1.PA)));
 
-    const Present = exports.periodID_to_Subjects(exports.intersection(period_id.map(value => value.period_id), PA.map(value_1 => value_1.PA)));
-
-    const notPresent = exports.periodID_to_Subjects(exports.uncommonitem(period_id.map(value_2 => value_2.period_id), PA.map(value_3 => value_3.PA)));
+    const notPresent = periodID_to_Subjects(uncommonitem(period_id.map(value_2 => value_2.period_id), PA.map(value_3 => value_3.PA)));
 
     const Final = `Attended Subjects: ${Present}, Unattended Subjects: ${notPresent}`;
 
