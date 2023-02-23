@@ -4,7 +4,7 @@ const {
   getStats,
   allStudents,
   subjectinfo,
-  getClasses,
+  getWebClasses,
 } = require("../controllers/webControllers.js");
 const router = express.Router();
 
@@ -18,6 +18,6 @@ router.route("/calendar/:batch_id/:date").get(isWebAuthenticated, subjectinfo);
 
 router.route("/demo").get(isWebAuthenticated, allStudents);
 
-router.route("/getClasses").get(isWebAuthenticated, getClasses);
+router.route("/getWebClasses").get(isWebAuthenticated, getWebClasses);
 
 module.exports = router;

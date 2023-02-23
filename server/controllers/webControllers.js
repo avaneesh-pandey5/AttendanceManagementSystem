@@ -46,7 +46,7 @@ function generateToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
 }
 
-exports.getClasses = async (req, res) => {
+exports.getWebClasses = async (req, res) => {
   try {
     const user = req.user;
     const course = user.course;
