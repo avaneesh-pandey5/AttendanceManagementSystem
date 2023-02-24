@@ -96,7 +96,7 @@ exports.generatePID = async (req, res) => {
     const stamp =
       new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
     
-    globalStamp = stamp; 
+    globalStamp = stamp;
 
     db.query(
       `INSERT INTO period_id (instructor_id, subject_code, batch_id, stamp) VALUES (?, ?, ?, ?)`,
@@ -120,9 +120,10 @@ exports.generatePID = async (req, res) => {
   }
 };
 
+
 exports.getstudents = async (req, res) => {
   try {
-    const batch_id = req.body;
+    const batch_id = req.body.batchId;
     db.query(
       `SELECT enrollment_no, name from student where student.course IN
       (select batch_allocation.course from batch_allocation where batch_id = ?)
@@ -150,48 +151,44 @@ exports.getstudents = async (req, res) => {
 
 exports.markingAttendance = async (req, res) => {
   try {
-    const { enroll } = req.body;
-    const attendanceStatus = req.body.attendanceStatus;
+    const { data } = req.body;
     const stamp = globalStamp;
-    let PId;
+    console.log(stamp);
 
-    db.query(
-      `SELECT period_id FROM ggsipu_attendance.period_id  WHERE stamp = ?;`,
-      [stamp],
-      (error, result) => {
-        if (error) {
-          throw error;
-        } else {
-          PId = result;
+    const PId = await new Promise((resolve, reject) => {
+      db.query(
+        `SELECT period_id FROM ggsipu_attendance.period_id WHERE stamp = ?`,
+        [stamp],
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            if (result.length > 0) {
+              resolve(result[0].period_id);
+            } else {
+              reject(new Error("Period ID not found"));
+            }
+          }
         }
+      );
+    });
+    console.log(PId)
+  
+
+    for (const { enrollment_no, attendancestatus } of data) {
+      if (attendancestatus === 1) {
+        db.query(
+          `UPDATE attendance SET PA=CONCAT(?, PA) WHERE enrollment_no = ?;`,
+          [PId, enrollment_no]
+        );
+      } else if (attendancestatus === 0) {
+        db.query(
+          `UPDATE attendance SET PA=CONCAT(0, PA) WHERE enrollment_no = ?;`,
+          [enrollment_no]
+        );
       }
-    );
-
-    if (attendanceStatus === 1) {
-      db.query(
-        `UPDATE attendance SET PA=CONCAT(?, PA) WHERE enrollment_no = ? `,
-        [PId, enroll],
-        function (error) {
-          if (error) {
-            throw error;
-          } else {
-            res.send({ message: "Marked present" });
-          }
-        }
-      );
-    } else if (attendanceStatus === 0) {
-      db.query(
-        `UPDATE attendance SET PA=CONCAT(0, PA) WHERE enrollment_no = ? `,
-        [enroll],
-        function (error) {
-          if (error) {
-            throw error;
-          } else {
-            res.send({ message: "Marked absent" });
-          }
-        }
-      );
     }
+    res.send({ message: "Attendance marked" });
   } catch (error) {
     res.status(500).json({
       success: false,
