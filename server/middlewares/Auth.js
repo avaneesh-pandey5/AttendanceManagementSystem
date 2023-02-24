@@ -49,9 +49,9 @@ exports.isAppAuthenticated = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     req.user = decoded;
 
-    const query = `SELECT * FROM employee WHERE instructor_id = '${decoded.id}'`;
+    const query = `SELECT * FROM employee WHERE instructor_id = ?`;
 
-    db.query(query, (error, result) => {
+    db.query(query, [decoded.id], (error, result) => {
       if (error) {
         throw error;
       }

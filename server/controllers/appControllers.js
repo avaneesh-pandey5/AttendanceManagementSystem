@@ -95,7 +95,7 @@ exports.generatePID = async (req, res) => {
 
     const stamp =
       new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
-    
+
     globalStamp = stamp;
 
     db.query(
@@ -135,9 +135,9 @@ exports.getstudents = async (req, res) => {
         } else {
           res.json({
             success: true,
-             message: "Successfully added students",
-             result: result
-            })
+            message: "Successfully found students",
+            result: result,
+          });
         }
       }
     );
