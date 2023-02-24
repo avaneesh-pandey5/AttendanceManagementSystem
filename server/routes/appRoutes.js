@@ -16,8 +16,8 @@ router.route("/getClasses").get(isAppAuthenticated, getClasses);
 
 router.route("/generatePID").post(isAppAuthenticated, generatePID);
 
-router.route("/getstudents/:batch_ID").get(isAppAuthenticated, getstudents);
+router.route("/getstudents").get(isAppAuthenticated, getstudents);
 
-router.route("/markingattendance/:enroll").post(isAppAuthenticated, markingAttendance);
+router.route("/markingattendance").post(isAppAuthenticated, markingAttendance);
 
 module.exports = router;
