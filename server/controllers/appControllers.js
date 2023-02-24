@@ -116,6 +116,34 @@ exports.generatePID = async (req, res) => {
   }
 };
 
+exports.getstudents = async (req, res) => {
+  try {
+    const batch_id = req.body.batchId;
+    db.query(
+      `SELECT enrollment_no, name from student where student.course IN
+      (select batch_allocation.course from batch_allocation where batch_id = ?)
+        AND student.stream IN (select batch_allocation.stream from batch_allocation where batch_id = ?);`,
+      [batch_id, batch_id],
+      function (error, result) {
+        if (error) {
+          throw error;
+        } else {
+          res.json({
+            success: true,
+             message: "Successfully added students",
+             result: result
+            })
+        }
+      }
+    );
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 exports.markingAttendance = async (req, res) => {
   try {
   } catch (error) {
