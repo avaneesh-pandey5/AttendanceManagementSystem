@@ -122,7 +122,7 @@ exports.generatePID = async (req, res) => {
 
 exports.getstudents = async (req, res) => {
   try {
-    const batch_id = req.body.batchId;
+    const batch_id = req.body;
     db.query(
       `SELECT enrollment_no, name from student where student.course IN
       (select batch_allocation.course from batch_allocation where batch_id = ?)
@@ -150,7 +150,7 @@ exports.getstudents = async (req, res) => {
 
 exports.markingAttendance = async (req, res) => {
   try {
-    const { enroll } = req.body.enroll;
+    const { enroll } = req.body;
     const attendanceStatus = req.body.attendanceStatus;
     const stamp = globalStamp;
     let PId;
