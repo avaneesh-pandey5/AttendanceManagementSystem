@@ -96,7 +96,7 @@ exports.generatePID = async (req, res) => {
     const stamp =
       new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
     
-     globalStamp = stamp; 
+    globalStamp = stamp; 
 
     db.query(
       `INSERT INTO period_id (instructor_id, subject_code, batch_id, stamp) VALUES (?, ?, ?, ?)`,
