@@ -150,7 +150,7 @@ exports.getstudents = async (req, res) => {
 
 exports.markingAttendance = async (req, res) => {
   try {
-    const { enroll } = req.body.enroll;
+    const { enroll } = req.body;
     const attendanceStatus = req.body.attendanceStatus;
     const stamp = globalStamp;
     let PId;
