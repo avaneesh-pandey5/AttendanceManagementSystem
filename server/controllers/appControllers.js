@@ -84,6 +84,8 @@ exports.getClasses = async (req, res) => {
   }
 };
 
+let globalStamp;
+
 exports.generatePID = async (req, res) => {
   try {
     const user = req.user;
@@ -93,6 +95,8 @@ exports.generatePID = async (req, res) => {
 
     const stamp =
       new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
+    
+     globalStamp = stamp; 
 
     db.query(
       `INSERT INTO period_id (instructor_id, subject_code, batch_id, stamp) VALUES (?, ?, ?, ?)`,
