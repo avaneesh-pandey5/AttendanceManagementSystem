@@ -146,6 +146,48 @@ exports.getstudents = async (req, res) => {
 
 exports.markingAttendance = async (req, res) => {
   try {
+    const { enroll } = req.params;
+    const attendanceStatus = req.body.attendanceStatus;
+    const stamp = globalStamp;
+    let PId;
+
+    db.query(
+      `SELECT period_id FROM ggsipu_attendance.period_id  WHERE stamp = ?;`,
+      [stamp],
+      (error, result) => {
+        if (error) {
+          throw error;
+        } else {
+          PId = result;
+        }
+      }
+    );
+
+    if (attendanceStatus === 1) {
+      db.query(
+        `UPDATE attendance SET PA=CONCAT(?, PA) WHERE enrollment_no = ? `,
+        [PId, enroll],
+        function (error) {
+          if (error) {
+            throw error;
+          } else {
+            res.send({ message: "Marked present" });
+          }
+        }
+      );
+    } else if (attendanceStatus === 0) {
+      db.query(
+        `UPDATE attendance SET PA=CONCAT(0, PA) WHERE enrollment_no = ? `,
+        [enroll],
+        function (error) {
+          if (error) {
+            throw error;
+          } else {
+            res.send({ message: "Marked absent" });
+          }
+        }
+      );
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
