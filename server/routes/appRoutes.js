@@ -14,28 +14,7 @@ router.route("/getClasses").get(isAppAuthenticated, getClasses);
 
 router.route("/generatePID").post(isAppAuthenticated, generatePID);
 
-// router.post("/api/addingStudents", (req, res) => {
-//   const batch = req.body.batch_id;
-
-//   try {
-//     db.query(
-//       `SELECT enrollment_no, name from student where  student.course IN
-//         (select batch_allocation.course from batch_allocation where batch_id = ?)
-//         AND
-//         student.stream IN (select batch_allocation.stream from batch_allocation where batch_id = ?);`,
-//       [batch, batch],
-//       function (error, result) {
-//         if (error) {
-//           throw error;
-//         } else {
-//           res.json({ message: "Succesfully added students" });
-//         }
-//       }
-//     );
-//   } catch (e) {
-//     res.status(500).send({ message: "Internal server error" });
-//   }
-// });
+router.route("/getstudents/:batch_ID").get(isAppAuthenticated, getstudents);
 
 // router.post("/api/markingAttendace", (req, res) => {
 //   const PId = req.body.id;
