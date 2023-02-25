@@ -3,10 +3,11 @@
 A modern, intuitive attendance management system for tracking student attendance. Developed by the Software Development Cell at University School of Automation and Robotics.
 
 ## Features
+- Easy attendance taking: Take attendance quickly and easily with just a few taps on mobile device.
+- Real-time updates: The app updates in real-time, so you can see who is present and who is absent right away.
+- Secure data storage: All attendance data is stored securely in Dataabse, so you can access it anytime, anywhere.
+- Reports and analytics: The app provides reports and analytics to help analyze attendance data and identify patterns.
 
-- Easy to use interface for teachers.
-- Customizable attendance policies for each course
-- Real-time attendance data and analysis
 
 ## Getting Started
 
