@@ -113,8 +113,19 @@ exports.generatePID = async (req, res) => {
     const subject_code = req.body.code;
     const batch_id = req.body.batchId;
 
-    const stamp =
-      new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
+    const options = {
+      timeZone: "Asia/Kolkata",
+      hour12: true,
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    };
+    const formatter = new Intl.DateTimeFormat("en-IN", options);
+    const stamp = formatter.format(new Date()).replace(",", "");
+    console.log(stamp);
 
     globalStamp = stamp;
 
@@ -139,6 +150,7 @@ exports.generatePID = async (req, res) => {
     });
   }
 };
+
 
 exports.getstudents = async (req, res) => {
   try {
