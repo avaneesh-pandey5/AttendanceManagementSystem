@@ -154,7 +154,7 @@ exports.allStudents = async (req, res) => {
 
 // calendar controller functions.
 
-getPeriodId = (date, batch_id) => {
+const getPeriodId = (date, batch_id) => {
   return new Promise((resolve, reject) => {
     try {
       const sql = `SELECT period_id FROM period_id WHERE batch_ID = '${batch_id}' AND stamp LIKE '${date}%';`;
@@ -163,7 +163,9 @@ getPeriodId = (date, batch_id) => {
           console.error("Error fetching data from MySQL:", err);
           reject({ statusCode: 500, message: "Internal Server Error" });
         } else {
-          resolve(result);
+          const periodIds = result.map((item) => item.period_id);
+          resolve(periodIds);
+          console.log(periodIds);
         }
       });
     } catch (error) {
@@ -173,16 +175,19 @@ getPeriodId = (date, batch_id) => {
   });
 };
 
-getPA = (enrollment_no, date) => {
+
+const getPA = (enrollment_no) => {
   return new Promise((resolve, reject) => {
     try {
-      const sql = `SELECT PA FROM attendance WHERE enrollment_no = '${enrollment_no}' AND PA LIKE '%${date}%';`;
+      console.log(enrollment_no)
+      const sql = `SELECT PA FROM attendance WHERE enrollment_no = '${enrollment_no}';`;
       db.query(sql, (err, result) => {
         if (err) {
           console.error("Error fetching data from MySQL:", err);
           reject({ statusCode: 500, message: "Internal Server Error" });
         } else {
           resolve(result);
+          console.log(result);
         }
       });
     } catch (error) {
@@ -192,60 +197,40 @@ getPA = (enrollment_no, date) => {
   });
 };
 
-intersection = (period_id, PA) => {
-  const attended = period_id.filter((value) => PA.includes(value));
-  return attended;
+async function findCommonPeriodIds(enrollment_no, date, batch_id) {
+  const periodIds = await getPeriodId(date, batch_id);
+  const paData = await getPA(enrollment_no);
+  const combinedPeriodIds = paData[0]?.PA || "";
+  
+  const combinedPeriodIdsArray = combinedPeriodIds.split(/EMP\d{5}[A-Z]{3} \d{7}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [ap]m/).filter(Boolean);
+  const paPeriodIdsArray = paData[0]?.PA.match(/EMP\d{5}[A-Z]{3} \d{7}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [ap]m/g) || [];
+  
+  const commonPeriodIds = periodIds.filter(id => combinedPeriodIdsArray.includes(id) || paPeriodIdsArray.includes(id));
+  console.log(commonPeriodIds);
+  return commonPeriodIds;
+}
+
+
+const getSubjectCodesFromPeriodIds = (attendedPeriodIds) => {
+  const subjectCodes = attendedPeriodIds.map((periodId) => {
+    return periodId.substring(8, 14);
+  });
+  return Array.from(new Set(subjectCodes));
 };
 
-uncommonitem = (period_id, PA) => {
-  const unattended = new Set(
-    period_id
-      .concat(PA)
-      .filter((v) => !period_id.includes(v) || !PA.includes(v))
-  );
-  return Array.from(unattended);
-};
+exports.getSubjectCodes = async (req, res) => {
+  const user = req.user;
+  //const enrollment_no = user.enroll;
+  const { date, batch_id, enrollment_no } = req.body;
 
-periodID_to_Subjects = (attended) => {
-  const subjectcode = attended.map((value) => value.slice(8, 14));
-  return subjectcode;
-};
 
-// only this function will be used by api
-
-exports.subjectinfo = async (req, res) => {
   try {
-    const user = req.user;
-    const { batch_id } = req.params;
-    const { date } = req.params;
-    const { enrollment_no } = user.enrollment_no;
+    const attendedPeriodIds = await findCommonPeriodIds(enrollment_no, date, batch_id);
+    const subjectCodes = getSubjectCodesFromPeriodIds(attendedPeriodIds);
 
-    const [period_id, PA] = await Promise.all([
-      getPeriodId(date, batch_id),
-      getPA(enrollment_no, date),
-    ]);
-
-    const Present = periodID_to_Subjects(
-      intersection(
-        period_id.map((value) => value.period_id),
-        PA.map((value_1) => value_1.PA)
-      )
-    );
-
-    const notPresent = periodID_to_Subjects(
-      uncommonitem(
-        period_id.map((value_2) => value_2.period_id),
-        PA.map((value_3) => value_3.PA)
-      )
-    );
-
-    const Final = `Attended Subjects: ${Present}, Unattended Subjects: ${notPresent}`;
-
-    return res.status(200).json({ success: true, Final });
+    res.status(200).json({ success: true, subjectCodes });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("Error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
