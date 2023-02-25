@@ -1,13 +1,16 @@
 const db = require("../database.js");
 const jwt = require("jsonwebtoken");
+const CryptoJS = require("crypto-js");
 
 exports.loginApp = async (req, res) => {
   try {
     const { instructor_id, password } = req.body;
 
+    const passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+
     db.query(
       `SELECT * FROM ggsipu_attendance.employee WHERE instructor_id = ? AND password = ?`,
-      [instructor_id, password],
+      [instructor_id, passwordHash],
       (error, result) => {
         if (error) {
           throw error;
@@ -44,6 +47,23 @@ exports.loginApp = async (req, res) => {
 function generateToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
 }
+
+exports.logout = async (req, res) => {
+  try {
+    res
+      .status(200)
+      .cookie("token", null, { expires: new Date(Date.now()), httpOnly: true })
+      .json({
+        success: true,
+        message: "loged out",
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 exports.getClasses = async (req, res) => {
   try {
@@ -120,7 +140,6 @@ exports.generatePID = async (req, res) => {
   }
 };
 
-
 exports.getstudents = async (req, res) => {
   try {
     const batch_id = req.body.batchId;
@@ -172,8 +191,7 @@ exports.markingAttendance = async (req, res) => {
         }
       );
     });
-    console.log(PId)
-  
+    console.log(PId);
 
     for (const { enrollment_no, attendancestatus } of data) {
       if (attendancestatus === 1) {

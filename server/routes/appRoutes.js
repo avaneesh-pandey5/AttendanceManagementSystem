@@ -4,13 +4,16 @@ const {
   getClasses,
   generatePID,
   getstudents,
-  markingAttendance  
+  markingAttendance,
+  logout,
 } = require("../controllers/appControllers.js");
 const router = express.Router();
 
 const { isAppAuthenticated } = require("../middlewares/Auth.js");
 
 router.route("/loginApp").post(loginApp);
+
+router.route("/logout").get(logout);
 
 router.route("/getClasses").get(isAppAuthenticated, getClasses);
 
