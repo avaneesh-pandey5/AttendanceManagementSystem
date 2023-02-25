@@ -175,11 +175,10 @@ const getPeriodId = (date, batch_id) => {
   });
 };
 
-
 const getPA = (enrollment_no) => {
   return new Promise((resolve, reject) => {
     try {
-      console.log(enrollment_no)
+      console.log(enrollment_no);
       const sql = `SELECT PA FROM attendance WHERE enrollment_no = '${enrollment_no}';`;
       db.query(sql, (err, result) => {
         if (err) {
@@ -201,11 +200,20 @@ async function findCommonPeriodIds(enrollment_no, date, batch_id) {
   const periodIds = await getPeriodId(date, batch_id);
   const paData = await getPA(enrollment_no);
   const combinedPeriodIds = paData[0]?.PA || "";
-  
-  const combinedPeriodIdsArray = combinedPeriodIds.split(/EMP\d{5}[A-Z]{3} \d{7}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [ap]m/).filter(Boolean);
-  const paPeriodIdsArray = paData[0]?.PA.match(/EMP\d{5}[A-Z]{3} \d{7}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [ap]m/g) || [];
-  
-  const commonPeriodIds = periodIds.filter(id => combinedPeriodIdsArray.includes(id) || paPeriodIdsArray.includes(id));
+
+  const combinedPeriodIdsArray = combinedPeriodIds
+    .split(
+      /EMP\d{5}[A-Z]{3} \d{7}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [ap]m/
+    )
+    .filter(Boolean);
+  const paPeriodIdsArray =
+    paData[0]?.PA.match(
+      /EMP\d{5}[A-Z]{3} \d{7}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [ap]m/g
+    ) || [];
+
+  const commonPeriodIds = periodIds.filter(
+    (id) => combinedPeriodIdsArray.includes(id) || paPeriodIdsArray.includes(id)
+  );
   console.log(commonPeriodIds);
   return commonPeriodIds;
 }
@@ -230,14 +238,14 @@ const getPeriodData = (period_id) => {
   });
 };
 
-
-
 async function getSubjectCodesFromPeriodIds(periodIds) {
   try {
-    const subjectCodes = await Promise.all(periodIds.map(async (id) => {
-      const periodData = await getPeriodData(id);
-      return periodData[0].subject_code;
-    }));
+    const subjectCodes = await Promise.all(
+      periodIds.map(async (id) => {
+        const periodData = await getPeriodData(id);
+        return periodData[0].subject_code;
+      })
+    );
     return subjectCodes.reduce((acc, val) => acc.concat(val), []);
   } catch (error) {
     console.error(error);
@@ -245,18 +253,20 @@ async function getSubjectCodesFromPeriodIds(periodIds) {
   }
 }
 
-
-
 exports.getSubjectCodes = async (req, res) => {
   const user = req.user;
-  //const enrollment_no = user.enroll;
-  const { date, batch_id, enrollment_no } = req.body;
+  const enrollment_no = user.enrollment_no;
+  const { date, batch_id } = req.body;
 
   try {
-    const attendedPeriodIds = await findCommonPeriodIds(enrollment_no, date, batch_id);
-    console.log('attendedPeriodIds:', attendedPeriodIds);
+    const attendedPeriodIds = await findCommonPeriodIds(
+      enrollment_no,
+      date,
+      batch_id
+    );
+    console.log("attendedPeriodIds:", attendedPeriodIds);
     const subjectCodes = await getSubjectCodesFromPeriodIds(attendedPeriodIds);
-    console.log('subjectCodes:', subjectCodes);
+    console.log("subjectCodes:", subjectCodes);
 
     res.status(200).json({ success: true, subjectCodes });
   } catch (error) {
