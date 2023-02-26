@@ -1,10 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import './../style.css'
 import logo from '../img/logo.png'
 // import { Link } from 'react-router-dom'
-import Dropdown from 'react-bootstrap/Dropdown';
-import Usar from "../component/Usar";
-import Usdi from "../component/Usdi";
 import Logform from "../component/Logform";
 
 const Login = () => {
