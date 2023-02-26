@@ -11,10 +11,12 @@ const Attendance = () => {
                 <div className="main">
                     <div className="main-top" >
                         <h1>ATTENDANCE LIST</h1>
-                        <i className="fas fa-user-cog px-4 fa-lg"></i>
+                        {/* <i className="fas fa-user-cog px-4 fa-lg"></i> */}
                     </div>
 
                     <hr className='hrstyle'/>
+
+                    
 
                     <div className="attendance">
                         <div className="attendance-list">

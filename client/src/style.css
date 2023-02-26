@@ -81,7 +81,7 @@ body {
 }
 
 .logo {
-  width: 150px;
+  width: 120px;
 }
 
 .login-text {
@@ -205,7 +205,7 @@ a {
   text-decoration: none
 }
 
-nav a:hover {
+.navbar a:hover {
   color: #fff;
 }
 
@@ -226,11 +226,13 @@ body {
   background: #fff;
 }
 
-nav ul {
+.navbar ul {
+  top: 0;
+  position: absolute;
   padding-left: 0px;
 }
 
-nav {
+.navbar{
   position: sticky;
   top: 0;
   bottom: 0;
@@ -250,8 +252,8 @@ nav {
 
 .logo {
   display: flex;
-  margin: 10px 0 0 10px;
-  padding-bottom: 3rem;
+  margin: 5px 0 0 5px;
+  padding-bottom: 2rem;
 }
 
 .logo img {
@@ -276,7 +278,7 @@ nav {
   padding: 10px;
 }
 
-nav .fas {
+.navbar .fas {
   position: relative;
   width: 70px;
   height: 40px;
@@ -302,7 +304,7 @@ nav .fas {
 }
 
 .logout {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   color: #fff;
   display: flex;
@@ -767,3 +769,215 @@ table thead tr {
   border-bottom: 2px solid #041D53;
 }
 
+
+.menu-icon{
+  display: none;
+}
+
+.navbar ul a.active {
+  color: #574c4c;
+  font-weight: 500;
+  position: relative;
+}
+
+.navbar ul a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #574c4c;
+}
+
+.attendance{
+  overflow: scroll;
+}
+
+
+/* Media query */
+
+
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+  .cont .users{
+    flex-direction: column;
+  }
+  .users .card{
+    margin: auto;
+  }
+  .users .card{
+    width: 300px;
+    height: 250px;
+  }
+  .users .card img{
+    display: none;
+  }
+  .users .per span {
+    padding: 20px;
+  }
+  .card h2{
+    font-size: 1.5rem;
+  }
+  .card h5{
+    font-size: 1.2rem;
+  }
+  .card p{
+    font-size: 0.8rem;
+  }
+  .login-left{
+    display: none;
+  }
+  .logo{
+    width: 70px;
+  padding-bottom: 0.8rem;
+  }
+  #dropdown-basic{
+    height: 2.5rem;
+    width: 70vw;
+    position: relative;
+    font-size: 0.7rem;
+    overflow: hidden;
+  }
+  .login-box{
+    height: auto;
+  }
+  .login-inner{
+    justify-content: center;
+    align-items: center;
+  }
+  .right-inner{
+    width: 100vw;
+  }
+}
+
+/* Media Query for low resolution  Tablets, Ipads */
+@media (min-width: 481px) and (max-width: 767px) {
+  .cont .users{
+    flex-direction: column;
+  }
+  .users .card{
+    margin: auto;
+  }
+  .users .card{
+    width: 400px;
+    height: 350px;
+  }
+  .users .card img{
+    width: 120px;
+  }
+  .users .per span {
+    padding: 20px;
+  }
+  .table{
+    width: 300px;
+  }
+  .login-left{
+    display: none;
+  }
+  .logo{
+    width: 70px;
+  padding-bottom: 0.8rem;
+  }
+  #dropdown-basic{
+    height: 2.5rem;
+    position: relative;
+    width: 70vw;
+    font-size: 0.9rem;
+  }
+  .login-box{
+    height: auto;
+  }
+  .login-inner{
+    justify-content: center;
+    align-items: center;
+  }
+  .right-inner{
+    width: 100vw;
+  }
+}
+
+/* Media Query for Tablets Ipads portrait mode */
+@media (min-width: 768px) and (max-width: 1024px){
+  .cont .users{
+    flex-direction: column;
+  }
+  .users .card{
+    margin: auto;
+  }
+  .logo{
+    width: 70px;
+  padding-bottom: 0.8rem;
+  }
+  .login-h1{
+    font-size: 5rem;
+  }
+  .login-h2{
+    font-size: 3rem;
+  }
+  #dropdown-basic{
+    height: 2.5rem;
+  }
+  .login-box{
+    height: auto;
+  }
+}
+
+/* Media Query for Laptops and Desktops */
+@media (min-width: 1025px) and (max-width: 1280px){
+  .logo{
+    width: 80px;
+  padding-bottom: 1rem;
+  }
+  .login-h1{
+    font-size: 6rem;
+  }
+  .login-h2{
+    font-size: 4rem;
+  }
+}
+
+/* Media Query for Large screens */
+@media (min-width: 1281px) {
+
+}
+
+@media (max-width: 1280px){
+  .menu-icon {
+    display: block;
+    cursor: pointer;
+    margin: 12px 14px;
+  }
+
+  .navbar {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background-color: #041D53;
+    width: 0px;
+    height: 100vh;
+    transition: all 0.3s ease-in;
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  .navbar.active {
+    width: 270px;
+  }
+
+  .navbar ul {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .navbar ul li {
+    margin-right: unset;
+    margin-top: 22px;
+  }
+  .main-top h1{
+    margin: auto;
+  }
+  .logout{
+    position: relative;
+  }
+}
