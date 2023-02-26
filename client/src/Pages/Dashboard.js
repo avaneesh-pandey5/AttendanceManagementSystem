@@ -2,8 +2,6 @@ import React from 'react'
 import './../style.css'
 import Profile from "../img/user.png"
 import Navbar from '../component/Navbar'
-import { Link } from 'react-router-dom'
-import Button from "react-bootstrap/Button";
 import App from '../component/Calendar/App'
 
 const Dashboard = () => {
@@ -17,7 +15,7 @@ const Dashboard = () => {
         <div className="main">
           <div className="main-top" >
             <h1>STUDENT DASHBOARD</h1>
-            <i className="fas fa-user-cog px-4 fa-lg"></i>
+            {/* <i className="fas fa-user-cog px-4 fa-lg"></i> */}
           </div>
           <hr className='hrstyle'/>
           <div className="users">
@@ -29,7 +27,8 @@ const Dashboard = () => {
 
               <div className="per">
                 <table>
-                  <tr>
+                <tbody>
+                <tr>
                     <td><span>85%</span></td>
                     <td><span>87%</span></td>
                   </tr>
@@ -37,18 +36,19 @@ const Dashboard = () => {
                     <td>Sem</td>
                     <td>Year</td>
                   </tr>
+                </tbody>
                 </table>
               </div>
               <div className='d-flex justify-content-center'>
-              <Link className='pageLink' to="/about">
+              {/* <Link className='pageLink' to="/about">
                 <Button className='profile-btn w-100' variant="outline-light" size="md">View Profile
               </Button>
-              </Link>
+              </Link> */}
               </div>
             </div>
 
-            <div className='calendar'>
-            <App />
+            <div className='calendar z-1'>
+            <App/>
             </div>
             
 

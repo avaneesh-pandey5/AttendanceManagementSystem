@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import './../style.css'
 import logo from '../img/logo.png'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import Dropdown from 'react-bootstrap/Dropdown';
+import Usar from "../component/Usar";
+import Usdi from "../component/Usdi";
+import Logform from "../component/Logform";
 
 const Login = () => {
-
-  const [title1, setTitle1] = useState("Select Branch");
-  const [title2, setTitle2] = useState("Select Batch");
-
-  
+  // const [title3, setTitle3] = useState("Select College");
 
   return (
     <>
@@ -23,41 +22,33 @@ const Login = () => {
             <div className="right-inner container m-4 d-flex flex-column justify-content-center">
               <img className='logo m-auto' src={logo} alt="logo" />
               <div className="login-form container">
-              <p className="login-text m-4 pt-2">Univeristy School of Automation and Robotics</p>
+              {/* <p className="login-text m-4 pt-2">Univeristy School of Automation and Robotics</p> */}
 
-                <Dropdown className="py-2">
+              {/* <Dropdown className="py-2" id="cllg">
                   <Dropdown.Toggle className="dropdownBox" id="dropdown-basic">
-                    {title1}
+                    {title3}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => setTitle1("Artificial Intelligence and Data Science")}>Artificial Intelligence and Data Science</Dropdown.Item>
-                    <Dropdown.Item onClick={() => setTitle1("Artificial Intelligence and Machine Learning")}>Artificial Intelligence and Machine Learning</Dropdown.Item>
-                    <Dropdown.Item onClick={() => setTitle1("Industrial internet of things")}>Industrial internet of things</Dropdown.Item>
-                    <Dropdown.Item onClick={() => setTitle1("Automation and Robotics")}>Automation and Robotics</Dropdown.Item>
+                    <Dropdown.Item onClick={() => setTitle3("University School of Automation & Robotics")}>University School of Automation & Robotics</Dropdown.Item>
+                    <Dropdown.Item onClick={() => setTitle3("University School of Design & Innovation")}>University School of Design & Innovation</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
 
-                <Dropdown className="py-2">
-                  <Dropdown.Toggle className="dropdownBox" id="dropdown-basic">
-                    {title2}
-                  </Dropdown.Toggle>
+                <div>
+                {title3 == "University School of Automation & Robotics"
+                ? <Usar/>
+                : <Usdi/>
+                }
+                </div> */}
 
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => setTitle2("Batch 1")}>Batch 1</Dropdown.Item>
-                    <Dropdown.Item onClick={() => setTitle2("Batch 2")}>Batch 2</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <h3 className="log-h3">Student Attendance System</h3>
+                
+                <p className="log-p">To access your dashboard, enter your enrollment number in the field below.</p>
 
-                <form action="" className="py-2">
-                  <div className="form-floating mb-3">
-                    <input type="email" autoComplete="off" className="form-control login-box" id="floatingInput" placeholder="name@example.com" />
-                    <label htmlFor="floatingInput">Enrollment number</label>
-                  </div>
-                  <div className="d-grid gap-2 mt-4">
-                    <button className="btn login-btn" type="button"><Link className='pageLink' to="/dashboard">Login</Link></button>
-                  </div>
-                </form>
+                <Logform/>
+
+
               </div>
             </div>
           </div>
