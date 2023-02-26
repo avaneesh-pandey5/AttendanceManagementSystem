@@ -1,13 +1,16 @@
 const db = require("../database.js");
 const jwt = require("jsonwebtoken");
+const CryptoJS = require("crypto-js");
 
 exports.loginApp = async (req, res) => {
   try {
     const { instructor_id, password } = req.body;
 
+    const passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+
     db.query(
       `SELECT * FROM ggsipu_attendance.employee WHERE instructor_id = ? AND password = ?`,
-      [instructor_id, password],
+      [instructor_id, passwordHash],
       (error, result) => {
         if (error) {
           throw error;
@@ -45,34 +48,63 @@ function generateToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
 }
 
+exports.logout = async (req, res) => {
+  try {
+    res
+      .status(200)
+      .cookie("token", null, { expires: new Date(Date.now()), httpOnly: true })
+      .json({
+        success: true,
+        message: "loged out",
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 exports.getClasses = async (req, res) => {
   try {
     const user = req.user;
     const id = user.instructor_id;
+    const data = { batches: [] };
 
     db.query(
-      `SELECT batch_id FROM ggsipu_attendance.subject_allocation WHERE instructor_id = ?`,
+      `SELECT batch_id, subject_name FROM ggsipu_attendance.subject_allocation WHERE instructor_id = ?`,
       [id],
-      (error, result) => {
+      (error, results) => {
         if (error) {
           throw error;
         } else {
-          var batch_id = result[0].batch_id;
+          data.batches = results;
 
-          db.query(
-            `SELECT * FROM ggsipu_attendance.batch_allocation WHERE batch_id = ?`,
-            [batch_id],
-            (error, result) => {
-              if (error) {
-                throw error;
-              } else {
-                res.status(200).json({
-                  success: true,
-                  result: result[0],
-                });
+          data.batches.forEach((batch) => {
+            db.query(
+              `SELECT * FROM ggsipu_attendance.batch_allocation WHERE batch_id = ?`,
+              [batch.batch_id],
+              (error, results, fields) => {
+                if (error) {
+                  throw error;
+                } else {
+                  batch.course = results[0].course;
+                  batch.stream = results[0].stream;
+                  batch.semester = results[0].semster;
+                  // Check if all the queries have completed before sending the response
+                  if (
+                    data.batches.every(
+                      (batch) =>
+                        batch.hasOwnProperty("course") &&
+                        batch.hasOwnProperty("stream")
+                    )
+                  ) {
+                    res.status(200).json({ success: true, data });
+                  }
+                }
               }
-            }
-          );
+            );
+          });
         }
       }
     );
@@ -93,8 +125,19 @@ exports.generatePID = async (req, res) => {
     const subject_code = req.body.code;
     const batch_id = req.body.batchId;
 
-    const stamp =
-      new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
+    const options = {
+      timeZone: "Asia/Kolkata",
+      hour12: true,
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    };
+    const formatter = new Intl.DateTimeFormat("en-IN", options);
+    const stamp = formatter.format(new Date()).replace(",", "");
+    console.log(stamp);
 
     globalStamp = stamp;
 
@@ -119,7 +162,6 @@ exports.generatePID = async (req, res) => {
     });
   }
 };
-
 
 exports.getstudents = async (req, res) => {
   try {
@@ -172,8 +214,7 @@ exports.markingAttendance = async (req, res) => {
         }
       );
     });
-    console.log(PId)
-  
+    console.log(PId);
 
     for (const { enrollment_no, attendancestatus } of data) {
       if (attendancestatus === 1) {

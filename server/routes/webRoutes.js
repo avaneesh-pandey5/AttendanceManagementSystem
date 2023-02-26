@@ -3,18 +3,23 @@ const {
   login,
   getStats,
   allStudents,
-  subjectinfo,
+  getSubjectCodes,
   getWebClasses,
 } = require("../controllers/webControllers.js");
 const router = express.Router();
 
 const { isWebAuthenticated } = require("../middlewares/Auth.js");
 
+router.route("/")
+  .get((req, res) => {
+    res.status(200).json({ message: "Welcome to the SDC-AttendanceManagementSystem-Server!" });
+  });
+
 router.route("/login").post(login);
 
 router.route("/getStats/:subjectCode").get(isWebAuthenticated, getStats);
 
-router.route("/calendar/:batch_id/:date").get(isWebAuthenticated, subjectinfo);
+router.route("/calendar").get(isWebAuthenticated, getSubjectCodes);
 
 router.route("/demo").get(isWebAuthenticated, allStudents);
 
