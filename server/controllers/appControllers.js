@@ -166,11 +166,12 @@ exports.generatePID = async (req, res) => {
 exports.getstudents = async (req, res) => {
   try {
     const batch_id = req.body.batchId;
+    const semster = req.body.semster;
     db.query(
       `SELECT enrollment_no, name from student where student.course IN
       (select batch_allocation.course from batch_allocation where batch_id = ?)
-        AND student.stream IN (select batch_allocation.stream from batch_allocation where batch_id = ?);`,
-      [batch_id, batch_id],
+        AND student.stream IN (select batch_allocation.stream from batch_allocation where batch_id = ? AND semster=?);`,
+      [batch_id, batch_id, semster],
       function (error, result) {
         if (error) {
           throw error;
