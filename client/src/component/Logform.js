@@ -39,16 +39,15 @@ const Logform = () => {
     <div>
       <form onSubmit={loginUser} action="" className="py-2">
         <div className="form-floating mb-3">
-          <input
-            value={enrollment}
-            onChange={(e) => setEnrollment(e.target.value)}
-            type="text"
-            className="form-control login-box"
-            id="floatingInput"
-            placeholder="enrollement no."
-            required
-          />
-          <label htmlFor="floatingInput">Enrollment number</label>
+          <div className="form-group mb-3">
+            <input
+              value={enrollment}
+              onChange={(e) => setEnrollment(e.target.value)}
+              className="form-control login-box"
+              placeholder="Enrollment Number"
+              required
+              ></input>
+          </div>
         </div>
         <div className="d-grid gap-2 mt-4">
           <input className="btn login-btn" value="Login" type="submit" />
