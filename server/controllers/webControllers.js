@@ -46,9 +46,12 @@ function generateToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
 }
 
+let globalBatchId;
+
 exports.getWebClasses = async (req, res) => {
   try {
     const user = req.user;
+    console.log(user)
     const course = user.course;
     const stream = user.stream;
     const semester = user.semester;
@@ -64,15 +67,17 @@ exports.getWebClasses = async (req, res) => {
             .status(400)
             .json({ success: false, message: "No batch ID found!" });
         } else {
-          const batch_id = result[0];
+          const batch_id = result[0].batch_id;
+          globalBatchId = batch_id;
+          console.log(batch_id);
           db.query(
-            `SELECT subject_code ggsipu_attendance.subject_allocation WHERE batch_id = ?`,
+            `SELECT sa.subject_code, sa.subject_name, e.name FROM ggsipu_attendance.subject_allocation sa JOIN ggsipu_attendance.employee e ON sa.instructor_id = e.instructor_id WHERE sa.batch_id = ?;`,
             [batch_id],
             (error, result) => {
               if (error) {
                 throw error;
               } else {
-                res.status(200).json({ success: true, batchId: result });
+                res.status(200).json({ success: true, subjectInfo: result });
               }
             }
           );
@@ -256,7 +261,8 @@ async function getSubjectCodesFromPeriodIds(periodIds) {
 exports.getSubjectCodes = async (req, res) => {
   const user = req.user;
   const enrollment_no = user.enrollment_no;
-  const { date, batch_id } = req.body;
+  const { date } = req.body;
+  batch_id = globalBatchId;
 
   try {
     const attendedPeriodIds = await findCommonPeriodIds(
